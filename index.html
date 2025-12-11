@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Logistics App — Pro UI (Premium)</title>
+
+<!-- ===== Theme variables (will update via settings) ===== -->
+<style>
+:root{
+  --bg-1: #c3d1ff;
+  --bg-2: #eef2f5;
+  --primary: #1d53ff;
+  --accent: #4b7bff;
+  --card-bg: rgba(255,255,255,0.88);
+  --text: #0f234b;
+  --muted: #65789a;
+  --glass-border: rgba(20,30,80,0.06);
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  background:linear-gradient(135deg,var(--bg-1),var(--bg-2));
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+  padding-bottom:60px;
+}
+
+/* ---------- Transitions & Animations (3 & 8) ---------- */
+.screen { display:none; padding:20px; position:relative; }
+.screen.active { display:block; }
+.page-enter { animation: pageEnter .32s cubic-bezier(.2,.9,.2,1) forwards; }
+.page-leave { animation: pageLeave .28s cubic-bezier(.2,.9,.2,1) forwards; }
+
+@keyframes pageEnter {
+  from { opacity:0; transform: translateY(12px) scale(.995); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+@keyframes pageLeave {
+  from { opacity:1; transform: translateY(0); }
+  to   { opacity:0; transform: translateY(-8px); }
+}
+
+/* subtle micro-animation for icons */
+.icon-bounce { animation: iconBounce 1.6s infinite; }
+@keyframes iconBounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+/* ---------- Cards & Controls ---------- */
+.card{
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border-radius:14px;
+  padding:14px;
+  border:1px solid var(--glass-border);
+  box-shadow:0 10px 30px rgba(12,20,40,0.06);
+  max-width:1100px;margin:18px auto;
+}
+.topbar{ text-align:center; font-size:20px; font-weight:700; margin-bottom:10px; color:var(--text); }
+
+/* inputs */
+input,select,button,textarea{
+  padding:10px;border-radius:10px;border:1px solid #e6e9ef;background:#fff;font-size:14px;width:100%;
+}
+input:focus,select:focus,textarea:focus{ outline:none; box-shadow:0 8px 22px rgba(29,83,255,0.06); border-color:var(--primary); }
+
+button{ cursor:pointer; background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; border:none; font-weight:700; padding:10px 12px; border-radius:10px; }
+button.ghost{ background:transparent; color:var(--primary); border:1px solid rgba(29,83,255,0.12); font-weight:700; }
+.small{ padding:7px 9px; font-size:13px; }
+
+/* menu */
+.menu-row{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; }
+.menu-card{ min-width:160px; max-width:260px; background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(250,250,255,0.9)); padding:14px;border-radius:12px;text-align:center;border:1px solid rgba(20,30,80,0.04); cursor:pointer; transition: transform .18s ease, box-shadow .18s ease; }
+.menu-card:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(12,20,40,0.08); }
+
+/* table-like entries */
+.table-box{ background:#fff; padding:10px; border-radius:10px; box-shadow:0 6px 18px rgba(12,20,40,0.04); }
+.entry-row{ display:flex; gap:12px; align-items:center; padding:10px; border-bottom:1px solid #f1f3f8; transition: background .12s ease, transform .12s ease; }
+.entry-row:hover{ background:rgba(29,83,255,0.03); transform:translateY(-2px); }
+.entry-info{ flex:1; font-size:14px; color:var(--text); }
+.actions{ display:flex; gap:8px; }
+
+/* ---------- Professional Report Grid & Card (with icons & status chips) ---------- */
+.controls-bar{ max-width:1100px; margin:0 auto 12px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:0 10px; }
+.left-controls{ display:flex; gap:8px; align-items:center; }
+.search-suggest { position:relative; }
+.suggest-list { position:absolute; left:0; right:0; top:44px; background:#fff; border-radius:8px; box-shadow:0 8px 24px rgba(12,20,40,0.08); max-height:220px; overflow:auto; z-index:60; border:1px solid #eef2f7; }
+.suggest-item{ padding:8px 10px; cursor:pointer; border-bottom:1px solid #f4f6fa; font-size:14px; }
+.suggest-item:hover{ background:rgba(29,83,255,0.03); }
+
+.report-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:18px; max-width:1200px; margin:0 auto; padding:0 10px 60px 10px; }
+.report-list { max-width:1000px; margin:0 auto; padding:0 10px 60px 10px; display:block; }
+
+.report-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(250,250,255,0.94));
+  border-radius:12px; padding:12px; border:1px solid var(--glass-border);
+  box-shadow:0 10px 28px rgba(12,20,40,0.06); transition: transform .18s ease, box-shadow .18s ease;
+  display:flex; flex-direction:column; gap:10px;
+}
+.report-card:hover{ transform:translateY(-8px); box-shadow:0 20px 50px rgba(12,20,40,0.12); }
+
+/* header row */
+.rc-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.rc-left{ display:flex; gap:10px; align-items:center; }
+.rc-icon{ width:42px; height:42px; display:grid; place-items:center; border-radius:10px; background:linear-gradient(180deg, rgba(29,83,255,0.12), rgba(75,123,255,0.06)); }
+.rc-title{ font-weight:700; color:var(--primary); font-size:15px; }
+.rc-sub{ font-size:13px; color:var(--muted); }
+
+/* status chip */
+.status-chip { padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; color:#fff; }
+.status-pending { background:#ffb020; }
+.status-complete { background:#18b18a; }
+.status-verified { background:#4b7bff; }
+
+/* report body rows */
+.rline{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:14px; color:var(--text); }
+.rline .label{ color:var(--muted); font-size:13px; }
+
+/* size qty chips */
+.qty-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.qty-chip{ background:rgba(15,38,78,0.04); padding:6px 8px; border-radius:8px; font-size:13px; color:var(--text); }
+
+/* card footer */
+.rc-footer{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:6px; }
+.rc-footer .kv{ font-weight:700; color:var(--muted); font-size:13px; }
+
+/* Floating Action Button (FAB) */
+.fab{ position:fixed; right:20px; bottom:20px; width:58px; height:58px; border-radius:999px; display:grid; place-items:center; box-shadow:0 12px 30px rgba(12,20,40,0.18); background:linear-gradient(90deg,var(--accent),var(--primary)); color:#fff; cursor:pointer; transition: transform .12s ease; }
+.fab:hover{ transform:translateY(-6px); }
+
+/* Settings panel small */
+.settings-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:720px){ .settings-grid{ grid-template-columns:1fr; } .report-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ===== Header / topbar (Premium) ===== -->
+<div style="position:sticky;top:0;z-index:80;padding:10px 14px;background:linear-gradient(90deg,rgba(255,255,255,0.45),rgba(255,255,255,0.30));backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,0.04)">
+  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--primary));display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px">L</div>
+      <div>
+        <div id="companyNameTop" style="font-weight:800;color:var(--text)">Logistics Pro</div>
+        <div style="font-size:12px;color:var(--muted)">Dashboard</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="ghost small" onclick="openScreen('settings')">⚙ Settings</button>
+        <button class="ghost small" onclick="openScreen('userManagement')">👥 Users</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="text-align:right;font-size:12px;color:var(--muted)"><div id="companyFooterMini">Your Company</div><div id="timeNow" style="font-weight:700"></div></div>
+        <div style="width:42px;height:42px;border-radius:999px;background:#fff;display:grid;place-items:center;box-shadow:0 6px 20px rgba(12,20,40,0.06);cursor:pointer">SR</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen" class="screen active page-enter">
+  <div class="card" style="text-align:center;max-width:420px">
+    <h2 style="margin:0 0 8px 0">🔐 Login</h2>
+    <input id="username" placeholder="Username" style="margin-bottom:8px"/>
+    <input id="password" type="password" placeholder="Password" style="margin-bottom:8px"/>
+    <div style="display:flex;gap:8px">
+      <button style="flex:1" onclick="login()">Login</button>
+      <button class="ghost small" onclick="demoFill()">Demo</button>
+    </div>
+    <p id="loginError" style="color:#d23;display:none;margin-top:8px">Invalid credentials</p>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="homeScreen" class="screen">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <div>
+        <div style="font-size:18px;font-weight:800" id="welcomeText">Welcome</div>
+        <div style="font-size:13px;color:var(--muted)">Quick actions & overview</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;color:var(--muted)">Company</div>
+        <div style="font-weight:800" id="companyNameCard">Your Company</div>
+      </div>
+    </div>
+
+    <div class="menu-row" style="margin-top:14px">
+      <div class="menu-card" onclick="openScreen('logistics')">📄 New Entry</div>
+      <div class="menu-card" onclick="openScreen('reportScreen')">📝 Reports</div>
+      <div class="menu-card" onclick="openScreen('dip')">📊 Dip Chart</div>
+      <div class="menu-card" onclick="openScreen('settings')">⚙ Settings</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== USER MANAGEMENT ===== -->
+<div id="userManagement" class="screen">
+  <div class="topbar">👥 User Management</div>
+  <div id="userList" class="card" style="padding:12px"></div>
+
+  <div class="card" style="max-width:900px">
+    <div style="font-weight:700;margin-bottom:8px">Add User</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <input id="newUser" placeholder="Username"/>
+      <input id="newPass" placeholder="Password"/>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px"><button onclick="addUser()">Add</button><button class="ghost" onclick="openScreen('homeScreen')">Back</button></div>
+  </div>
+</div>
+
+<!-- ===== LOGISTICS ENTRY ===== -->
+<div id="logistics" class="screen">
+  <div class="topbar">📄 Logistics Entry</div>
+
+  <div class="card" style="max-width:1100px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">
+      <input id="eDate" type="date"/>
+      <input id="eDO" placeholder="DO Number"/>
+      <input id="eVehicle" placeholder="Vehicle"/>
+      <input id="eCustomer" placeholder="Customer"/>
+      <input id="eProduct" placeholder="Product"/>
+      <select id="eStatus"><option value="pending">Pending</option><option value="complete">Complete</option><option value="verified">Verified</option></select>
+    </div>
+
+    <div style="margin-top:10px" id="sizeQtyContainer"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="addSizeQty()">+ Add Size & Qty</button>
+      <button class="ghost" onclick="clearSizeQty()">Clear Sizes</button>
+      <button class="ghost" onclick="fillSampleEntry()">Sample</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px">
+      <input id="eGross" type="number" placeholder="Gross"/>
+      <input id="eNet" type="number" placeholder="Net"/>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="saveEntry()">Save Entry</button>
+      <button class="ghost" onclick="clearForm()">Clear</button>
+      <button class="ghost" onclick="openScreen('reportScreen')">View Reports</button>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:1100px;margin-top:12px">
+    <div style="font-weight:700;margin-bottom:8px">Search quick</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="search-suggest" style="flex:1">
+        <input id="searchKey" placeholder="Type DO, Vehicle or Customer..." oninput="handleSuggest(this.value)"/>
+        <div id="suggestBox" class="suggest-list" style="display:none"></div>
+      </div>
+      <button class="ghost" onclick="searchEntry()">Search</button>
+      <button class="ghost" onclick="showEntries()">Reset</button>
+    </div>
+  </div>
+
+  <div class="table-box" id="entryList" style="max-width:1100px;margin:14px auto"></div>
+  <div style="max-width:1100px;margin:10px auto"><button class="ghost" onclick="openScreen('homeScreen')">⬅ Back</button></div>
+</div>
+
+<!-- ===== FULL REPORT VIEW ===== -->
+<div id="reportScreen" class="screen">
+  <div class="topbar">📝 Full Report View</div>
+
+  <div class="controls-bar">
+    <div class="left-controls">
+      <div style="display:flex;gap:8px;">
+        <input id="filterCustomer" placeholder="Filter customer..." oninput="applyFilters()"/>
+        <input id="filterProduct" placeholder="Filter product..." oninput="applyFilters()"/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="btnGrid" onclick="setReportView('grid')">Grid View</button>
+      <button id="btnList" class="ghost" onclick="setReportView('list')">List View</button>
+    </div>
+  </div>
+
+  <div id="fullReportList" class="report-grid"></div>
+  <div style="max-width:1100px;margin:10px auto"><button class="ghost" onclick="openScreen('homeScreen')">⬅ Back</button></div>
+</div>
+
+<!-- ===== DIP & SETTINGS ===== -->
+<div id="dip" class="screen">
+  <div class="card"><div class="topbar">📊 Dip Chart (placeholder)</div><div style="height:160px;display:grid;place-items:center;color:var(--muted)">Chart will go here</div><div style="margin-top:8px"><button class="ghost" onclick="openScreen('homeScreen')">Back</button></div></div>
+</div>
+
+<div id="settings" class="screen">
+  <div class="topbar">⚙ Settings & Theme</div>
+
+  <div class="card settings-grid" style="max-width:1100px">
+    <div>
+      <div style="font-weight:700;margin-bottom:8px">Company Info</div>
+      <input id="companyName" placeholder="Company name (shows on top)" />
+      <input id="companyFooter" placeholder="Footer / signature text" style="margin-top:8px" />
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button onclick="saveSettings()">Save Settings</button>
+        <button class="ghost" onclick="resetSettings()">Reset</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-weight:700;margin-bottom:8px">Theme Colors</div>
+      <label style="font-size:13px;color:var(--muted)">Primary color</label>
+      <input id="themePrimary" type="color" value="#1d53ff" />
+      <label style="font-size:13px;color:var(--muted);margin-top:8px;display:block">Accent color</label>
+      <input id="themeAccent" type="color" value="#4b7bff" />
+      <label style="font-size:13px;color:var(--muted);margin-top:8px;display:block">Background top</label>
+      <input id="themeBg1" type="color" value="#c3d1ff" />
+      <label style="font-size:13px;color:var(--muted);margin-top:8px;display:block">Background bottom</label>
+      <input id="themeBg2" type="color" value="#eef2f5" />
+    </div>
+  </div>
+
+  <div class="card" style="max-width:1100px">
+    <div style="font-weight:700">Data Controls (local)</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="exportJSON()">Export JSON</button>
+      <button class="ghost" onclick="importJSON()">Import JSON</button>
+      <button class="ghost" onclick="clearAllData()">Clear All (local)</button>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:10px auto"><button class="ghost" onclick="openScreen('homeScreen')">⬅ Back</button></div>
+</div>
+
+<!-- ===== Floating Action Button ===== -->
+<div class="fab" title="New Entry" onclick="openScreen('logistics'); setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),80)">＋</div>
+
+<!-- ===== Scripts (logic + localStorage autosave + suggestions + transitions) ===== -->
+<script>
+/* ---------- LocalStorage Keys & helpers (10) ---------- */
+const LS_KEYS = { USERS:'lg_users_v1', ENTRIES:'lg_entries_v1', SETTINGS:'lg_settings_v1' };
+
+function saveToLS(){ 
+  try{
+    localStorage.setItem(LS_KEYS.USERS, JSON.stringify(users)); 
+    localStorage.setItem(LS_KEYS.ENTRIES, JSON.stringify(entries)); 
+    localStorage.setItem(LS_KEYS.SETTINGS, JSON.stringify(settings)); 
+  }catch(e){ console.warn('LS save failed',e); }
+}
+function loadFromLS(){
+  try{
+    const u = JSON.parse(localStorage.getItem(LS_KEYS.USERS) || 'null');
+    const e = JSON.parse(localStorage.getItem(LS_KEYS.ENTRIES) || 'null');
+    const s = JSON.parse(localStorage.getItem(LS_KEYS.SETTINGS) || 'null');
+    if(Array.isArray(u)) users = u;
+    if(Array.isArray(e)) entries = e;
+    if(s && typeof s === 'object') settings = Object.assign(settings, s);
+  }catch(e){ console.warn('LS load failed',e); }
+}
+
+/* ---------- Data (initial) ---------- */
+let users = [{username:'shariz', password:'1327', role:'admin'}];
+let entries = []; // each entry: {date,DO,vehicle,customer,product,sizeQtys:[{size,qty}],gross,net,status}
+let editIndex = -1;
+let sizeQtyCount = 0;
+let reportView = 'grid';
+let settings = { companyName:'Logistics Pro', companyFooter:'© Logistics Pro', primary:'#1d53ff', accent:'#4b7bff', bg1:'#c3d1ff', bg2:'#eef2f5' };
+
+/* ---------- Load LS on start ---------- */
+loadFromLS();
+applySettingsToUI();
+renderTopCompany();
+updateTimeNow();
+
+/* ---------- Utils ---------- */
+function escapeHtml(s){ if(s===null||s===undefined) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
+function showScreen(id){
+  // animated transition (3)
+  document.querySelectorAll('.screen').forEach(el=>{
+    if(el.id === id){
+      el.classList.add('active','page-enter');
+      el.classList.remove('page-leave');
+      setTimeout(()=>el.classList.remove('page-enter'),400);
+    } else {
+      if(el.classList.contains('active')){
+        el.classList.add('page-leave');
+        el.classList.remove('page-enter');
+        setTimeout(()=>el.classList.remove('active'),280);
+      }
+    }
+  });
+}
+
+/* ======= Auth & Screen routing ======= */
+function login(){
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value.trim();
+  const f = users.find(x=>x.username===u && x.password===p);
+  if(f){ document.getElementById('loginError').style.display='none'; openScreen('homeScreen'); } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+function demoFill(){ document.getElementById('username').value='shariz'; document.getElementById('password').value='1327'; }
+function openScreen(id){
+  if(id==='reportScreen') showFullReport();
+  if(id==='userManagement') loadUsers();
+  if(id==='logistics') showEntries();
+  showScreen(id);
+}
+
+/* ---------- Users CRUD ---------- */
+function loadUsers(){
+  const box = document.getElementById('userList'); box.innerHTML='';
+  users.forEach((u,i)=>{
+    const html = `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 6px;border-bottom:1px solid #f4f6fa">
+        <div><strong style="text-transform:capitalize">${escapeHtml(u.username)}</strong><div style="font-size:12px;color:var(--muted)">${escapeHtml(u.role)}</div></div>
+        <div>${u.username!=='shariz' ? `<button class="gho
